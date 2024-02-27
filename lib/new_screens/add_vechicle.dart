@@ -1310,14 +1310,15 @@ getupadte(){
                                           if (pickedTime != null) {
                                             print(pickedTime
                                                 .format(context)); // Output: 10:51 PM
-                                            DateTime parsedTime = DateFormat.jm().parse(
+                                            /*DateTime parsedTime = DateFormat.jm().parse(
                                                 pickedTime.format(context).toString());
                                             print(
                                                 parsedTime); // Output: 1970-01-01 22:53:00.000
                                             String formattedTime =
                                             DateFormat('HH:mm').format(parsedTime);
-                                            print(formattedTime); // Output: 14:59:00
-                                            startTimecon[i].text = formattedTime;
+                                            print(formattedTime);*/ // Output: 14:59:00
+                                            startTimecon[i].text = pickedTime
+                                                .format(context);
                                           } else {
                                             print("Time is not selected");
                                           }
@@ -1374,14 +1375,14 @@ getupadte(){
                                           if (pickedTime != null) {
                                             print(pickedTime
                                                 .format(context)); // Output: 10:51 PM
-                                            DateTime parsedTime = DateFormat.jm().parse(
+                                            /*DateTime parsedTime = DateFormat("").parse(
                                                 pickedTime.format(context).toString());
                                             print(
                                                 parsedTime); // Output: 1970-01-01 22:53:00.000
                                             String formattedTime =
                                             DateFormat('HH:mm').format(parsedTime);
-                                            print(formattedTime); // Output: 14:59:00
-                                            endTimecon[i].text = formattedTime;
+                                            print(formattedTime);*/ // Output: 14:59:00
+                                            endTimecon[i].text = pickedTime.format(context);
                                           } else {
                                             print("Time is not selected");
                                           }
