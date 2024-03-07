@@ -41,7 +41,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     });
     Map param = {'bus_id': widget.model.id, 'journey_date': widget.journeyDate};
     var response = await apiBaseHelper.postAPICall(
-        Uri.parse("${baseUrl}bus_details"), param);
+        Uri.parse("${baseUrl}bus_detailsss"), param);
+    print('${param}_________${baseUrl}bus_details___');
     setState(() {
       loading = false;
     });

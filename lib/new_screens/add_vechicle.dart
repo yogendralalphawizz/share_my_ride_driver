@@ -75,6 +75,10 @@ class _AddvehicleDetailsState extends State<AddvehicleDetails> {
 
 
   ];
+  List<String>  busDeck = [
+    'Both',
+    'Lower Deck',
+  ];
   Future<void>deleteStopage(String id) async {
     setState(() {
 
@@ -162,7 +166,7 @@ class _AddvehicleDetailsState extends State<AddvehicleDetails> {
 
     });
   }
-  List<String> selectType = ["AC", "Non AC","Sleeper"];
+  List<String> selectType = ["AC Seater", "Non AC Seater","Sleeper"];
   List<String> selectTypecar = ["AC", "Non AC"];
 
   String selectMethod = "Auto";
@@ -621,6 +625,163 @@ getupadte(){
                     ],
                   ),
                 ),
+
+                selectMethod== "Bus" && selectTypeac =='Sleeper' ? Column(
+
+                  children: [
+                    boxHeight(context, 2),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: getWidth(
+                          context,
+                          8,
+                        )),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: MyColorName.colorBg2,
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: getWidth(
+                            context,
+                            4,
+                          )),
+                      child: DropdownButton<dynamic>(
+                        hint: Text(
+                          "Select Bus Deck",
+                          style: TextStyle(color: Colors.black87),
+                        ),
+                        value: busDeckValue,
+                        icon: Icon(
+                          Icons.keyboard_arrow_down_outlined,
+                          color: MyColorName.primaryDark,
+                        ),
+                        items:busDeck.map((value) {
+                          return DropdownMenuItem<dynamic>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        isExpanded: true,
+                        underline: SizedBox(),
+                        onChanged: ( value) {
+
+                          setState(() {
+                            busDeckValue = value ;
+                          });
+
+
+                        },
+                      ),
+                    ),
+                  ),
+                    busDeckValue != null ? boxHeight(context, 2) :const SizedBox(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: getWidth(
+                          context,
+                          6,
+                        )),
+                    child: Row(
+                      children: [
+                        busDeckValue == 'Lower Deck' || busDeckValue == 'Both'  ?  Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: getWidth(
+                                  context,
+                                  2,
+                                )),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: MyColorName.colorBg2,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: getWidth(
+                                    context,
+                                    4,
+                                  )),
+                              child: DropdownButton<dynamic>(
+                                hint: Text(
+                                  "Total Seat Lower",
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                                value: totalLowerSeat,
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_outlined,
+                                  color: MyColorName.primaryDark,
+                                ),
+                                items:
+                                seatBusNo.map((value) {
+                                  return DropdownMenuItem<dynamic>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                isExpanded: true,
+                                underline: SizedBox(),
+                                onChanged: ( value) {
+                                  setState(() {
+                                    totalLowerSeat = value;
+
+                                  });
+
+                                },
+                              ),
+                            ),
+                          ),
+                        ) : SizedBox.shrink(),
+                        busDeckValue == 'Both' ? Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: getWidth(
+                                  context,
+                                  2,
+                                )),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: MyColorName.colorBg2,
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: getWidth(
+                                    context,
+                                    4,
+                                  )),
+                              child: DropdownButton<String>(
+                                hint: Text(
+                                  "Total Seat Upper",
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                                value: totalUpperSeat,
+                                icon: Icon(
+                                  Icons.keyboard_arrow_down_outlined,
+                                  color: MyColorName.primaryDark,
+                                ),
+                                items:
+                                seatBusNo.map((value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                isExpanded: true,
+                                underline: SizedBox(),
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    totalUpperSeat = value;
+
+                                  });
+
+                                },
+                              ),
+                            ),
+                          ),
+                        ) : SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
+                ],) :SizedBox.shrink(),
                 // boxHeight(
                 //   context,
                 //   2,
@@ -942,7 +1103,7 @@ getupadte(){
                   ),
                 ),
                 boxHeight(context, 2),
-                selectMethod=="Auto"?SizedBox.shrink():  Padding(
+                /*selectMethod=="Auto"?SizedBox.shrink():*/  Padding(
                   padding: EdgeInsets.symmetric(
                       horizontal: getWidth(
                         context,
@@ -1152,7 +1313,7 @@ getupadte(){
                         },
                         child: CircleAvatar(
                           backgroundColor: MyColorName.mainColor,
-                            child: Icon(Icons.add)),
+                            child: Icon(Icons.add,color: MyColorName.scaffoldColor,)),
                       )
                     ],),
                   ),
@@ -1488,7 +1649,7 @@ getupadte(){
                         child: CircleAvatar(
                           radius: 15,
                             backgroundColor: MyColorName.mainColor,
-                            child: Icon(Icons.horizontal_rule,size: 14,)),
+                            child: Icon(Icons.horizontal_rule,size: 14,color: MyColorName.scaffoldColor)),
                       ),
                       SizedBox(width: 20,)
                     ],
@@ -1590,7 +1751,10 @@ getupadte(){
   dynamic fromaddid;
   dynamic toaddid;
   String ?seatNoid;
+  String ?busDeckValue;
   String ?selectTypeac;
+  String ? totalLowerSeat;
+  String ?totalUpperSeat;
   bool isloading=false;
 
   void registerApi() async {
@@ -1615,6 +1779,9 @@ getupadte(){
     "end_time":endTime.text,
     "vehicle_no":bikeNumberCon.text,
     "amount":price.text,
+          "bus_deck":busDeckValue ?? '',
+          "total_upper_seat": totalUpperSeat ?? '',
+          "total_lower_seat":totalLowerSeat ?? '',
 
     "stop":
     dropDowncity.isEmpty?"":  dropDowncity[0]==null?"": dropDowncity.map((dynamic value) {

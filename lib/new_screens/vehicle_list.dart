@@ -21,6 +21,7 @@ class _VehicleListState extends State<VehicleList> {
   VehicleListModel vehicleListModel=VehicleListModel();
 
   bool isloading=false;
+
   Future<void> getVehicleList() async {
     isloading=true;
     setState(() {
@@ -68,6 +69,7 @@ class _VehicleListState extends State<VehicleList> {
       throw Exception("Failed to load suggestions");
     }
   }
+
   Future<void> updateStatusVehicle(String status,String id) async {
 
     var headers = {
@@ -89,6 +91,30 @@ class _VehicleListState extends State<VehicleList> {
     print('${request.fields}________');
     if (response.statusCode == 200) {
 
+    } else {
+      throw Exception("Failed to load suggestions");
+    }
+  }
+
+  Future<void> deleteVehicle(String id) async {
+
+    var headers = {
+      'Cookie': 'ci_session=ba5b65aa074927b9d9c1a401ca8edf20b7aeba71'
+    };
+    var request = http.MultipartRequest(
+        'POST', Uri.parse("${baseUrl}delete_vehicle"));
+
+    request.fields.addAll({
+      'bus_id': "${id}",
+    });
+
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    print('${request.fields}________');
+    if (response.statusCode == 200) {
+      getVehicleList();
     } else {
       throw Exception("Failed to load suggestions");
     }
@@ -163,9 +189,13 @@ class _VehicleListState extends State<VehicleList> {
                                   ],
                                 ),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text("Amount:",style: TextStyle(color: Colors.black,fontSize: 20),),
-                                    Text("${vehicleListModel.data?[index].amount}",style: TextStyle(color: Colors.black,fontSize: 20),),
+                                    Row(children: [
+                                      Text("Amount:",style: TextStyle(color: Colors.black,fontSize: 20),),
+                                      Text("${vehicleListModel.data?[index].amount}",style: TextStyle(color: Colors.black,fontSize: 20),),
+                                    ],),
+
                                   ],
                                 ),
                             
@@ -194,6 +224,71 @@ class _VehicleListState extends State<VehicleList> {
                                   inactiveThumbColor: Colors.red,
 
                                 ),
+                                IconButton(icon: Icon(Icons.delete, color: MyColorName.mainColor),onPressed: (){
+                                  showDialog(
+                                      context: context,
+                                      builder: (ctx) {
+                                        return AlertDialog(
+                                          title: Text("Delete Vehicle"),
+                                          content: Text(
+                                              "Do you want to delete?"),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                style: ElevatedButton
+                                                    .styleFrom(
+                                                  backgroundColor:
+                                                  Colors.red,
+                                                  shadowColor: Colors.red,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                      BorderRadius
+                                                          .circular(
+                                                          10)),
+                                                ),
+                                                child: Text(
+                                                  "No",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headlineSmall!
+                                                      .copyWith(
+                                                      color: Colors
+                                                          .white,
+                                                      fontSize: 14),
+                                                )),
+                                            ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                  deleteVehicle(vehicleListModel.data?[index].id ?? '');
+                                                },
+                                                style: ElevatedButton
+                                                    .styleFrom(
+                                                  backgroundColor:
+                                                  Colors.green,
+                                                  shadowColor:
+                                                  Colors.green,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                      BorderRadius
+                                                          .circular(
+                                                          10)),
+                                                ),
+                                                child: Text(
+                                                  "Yes",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headlineSmall!
+                                                      .copyWith(
+                                                      color: Colors
+                                                          .white,
+                                                      fontSize: 14),
+                                                )),
+                                          ],
+                                        );
+                                      });
+                                },)
                               ],
                             ),
                           ),

@@ -101,13 +101,26 @@ class _ForgotPageState extends State<ForgotPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   boxHeight(context,2, ),
-                  Text(
-                    "Forgot ",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium!
-                        .copyWith(color: Colors.white),
-                  ),
+                  Row(
+                    children: [
+                    InkWell(
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 30),
+                        child: Icon(Icons.arrow_back,size: 25,color: Colors.white,),
+                      ),
+                    ),
+                    SizedBox(width: MediaQuery.of(context).size.width/4.5,),
+                    Text(
+                      "Forgot ",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium!
+                          .copyWith(color: Colors.white),
+                    ),
+                  ],),
                   boxHeight(context,2, ),
 
 

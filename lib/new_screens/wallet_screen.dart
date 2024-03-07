@@ -61,7 +61,7 @@ class _MyWalletState extends State<MyWallet> {
         "user_id":curUserId,
 
         "payment_address":jsonEncode({"ac_no": "${acno}", "bank_name": "${bankname}", "ifsc_code": "${ifsccode}", "account_type": "${actype}", "ac_holder_name": "${acname}"})
-       , "amount":"${100}"
+       , "amount":"$amount"
       };
 
       var response = await apiBaseHelper.postAPICall(
@@ -69,6 +69,7 @@ class _MyWalletState extends State<MyWallet> {
       print(response.toString()+"GGGGGGGGGGGGGGGGFTFGGGGGGGGGG");
      if(response["error"]==false){
        setSnackbar("Withdrawal Request Sent Successfully", context);
+       Navigator.pop(context);
      }
      else{
        setSnackbar("${response["message"]}", context);
@@ -149,7 +150,7 @@ class _MyWalletState extends State<MyWallet> {
                         )),
                     child: TextFormField(
                       controller: bankNameController,
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.text,
                       maxLength: 10,
               
                       decoration: InputDecoration(
@@ -297,7 +298,7 @@ class _MyWalletState extends State<MyWallet> {
                         )),
                     child: TextFormField(
                       controller: amountController,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.phone,
                       maxLength: 10,
 
                       decoration: InputDecoration(
@@ -305,6 +306,7 @@ class _MyWalletState extends State<MyWallet> {
                         filled: true,
                         labelText: "Amount",
                         counterText: '',
+
                         labelStyle: TextStyle(color: Colors.black87),
 
                         enabledBorder: UnderlineInputBorder(
@@ -341,6 +343,7 @@ class _MyWalletState extends State<MyWallet> {
                 String ifscCode = ifscCodeController.text;
                 String accountType = accountTypeController.text;
                 String bankName = bankNameController.text;
+                String amount = amountController.text;
 
                 // Do something with the entered data (e.g., validation, saving, etc.)
 
@@ -362,10 +365,10 @@ class _MyWalletState extends State<MyWallet> {
                   return;
                 }
                 if(amountController.text==""){
-                  setSnackbar("Please enter bankName", context);
+                  setSnackbar("Please enter amount", context);
                   return;
                 }
-                withdrawalRequest(amountController.text, "${accountNumber}", "${bankName}", "${ifscCode}", "${accountType}", "${accountName}");
+                withdrawalRequest(amount, "${accountNumber}", "${bankName}", "${ifscCode}", "${accountType}", "${accountName}");
 
                 Navigator.of(context).pop();
               },

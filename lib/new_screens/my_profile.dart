@@ -254,7 +254,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (c) => MyWallet(getprofile: userModel)));
+                      MaterialPageRoute(builder: (c) => MyWallet(getprofile: userModel))).then((value) {
+                        getUserDetail();
+                  });
                 },
               ),
             ),
@@ -361,4 +363,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
 }
