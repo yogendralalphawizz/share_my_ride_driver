@@ -155,7 +155,7 @@ class SeatDesign {
     return data;
   }
 }
-class Address1 {
+class   Address1 {
   String? pickupAddress;
   String? dropAddress;
 
@@ -183,10 +183,12 @@ class Passanger {
   String? createdAt;
   String? updatedAt;
   String? otp;
+  String? mobile;
 
   Passanger(
       {this.id,
         this.bookingId,
+        this.mobile,
         this.name,
         this.gender,
         this.age,
@@ -198,6 +200,7 @@ class Passanger {
   Passanger.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     bookingId = json['booking_id'];
+    mobile = json['mobile'];
     name = json['name'];
     gender = json['gender'];
     age = json['age'];

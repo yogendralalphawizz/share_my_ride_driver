@@ -1,10 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:smr_driver/Model/booking_model.dart';
+import 'package:smr_driver/Model/bus_detailModel_response.dart';
 import 'package:smr_driver/Model/bus_detail_model.dart';
 import 'package:smr_driver/utils/ApiBaseHelper.dart';
 import 'package:smr_driver/utils/Session.dart';
+import 'package:smr_driver/utils/colors.dart';
 import 'package:smr_driver/utils/common.dart';
 import 'package:smr_driver/utils/constant.dart';
+
+import '../utils/constant.dart';
 
 class VehicleDetailScreen extends StatefulWidget {
   BookingModel model;
@@ -21,6 +27,8 @@ class VehicleDetailScreen extends StatefulWidget {
 
 class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   BusDetailModel? model;
+  BusDesignDataResponse? model2;
+
   StationModel? selectedPick;
   StationModel? selectedDrop;
   List<StationModel> pickList = [];
@@ -46,8 +54,13 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     setState(() {
       loading = false;
     });
+    log('${response}');
     if (response['status']) {
-      model = BusDetailModel.fromJson(response['data']);
+      if(response['data']['type']=='auto' || response['data']['type']=='car' || response['data']['bus_type']!='Sleeper') {
+        model = BusDetailModel.fromJson(response['data']);
+      }else {
+        model2 = BusDesignDataResponse.fromJson(response);
+      }
     } else {
       setSnackbar("Something went Wrong", context);
     }
@@ -300,12 +313,13 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                         itemCount:
                                             model!.seatDesignList!.length,
                                         itemBuilder: (context, index) {
-                                          int seatRow = model!.seatDesignList!
+                                          int seatRow = model!.seatDesignList![index]
+                                              .length;/*model!.seatDesignList!
                                               .reduce((curr, next) =>
                                                   curr.length > next.length
                                                       ? curr
                                                       : next)
-                                              .length;
+                                              .length;*/
                                           print(seatRow);
                                           return Padding(
                                             padding: const EdgeInsets.only(
@@ -347,8 +361,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                                                           children: [
                                                                             Text("Seat No. - ${model!
                                                                                 .seatDesignList![index][k].passanger!.first.seatNo}"),
-                                                                            Text("OTP - ${model!
-                                                                                .seatDesignList![index][k].passanger!.first.otp}"),
+                                                                            /*Text("OTP - ${model!
+                                                                                .seatDesignList![index][k].passanger!.first.otp}"),*/
                                                                           ],
                                                                         ),
                                                                         const SizedBox(height: 5,),
@@ -367,6 +381,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                                                    , const SizedBox(height: 5,),
                                                                        Text("Drop Address - ${model!
                                                                             .seatDesignList![index][k].address?.dropAddress}"),
+                                                                        const SizedBox(height: 5,),
+                                                                        Text("Mobile Number - ${widget.model.mobile}"),
+
 
 
                                                                       ],
@@ -474,17 +491,12 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                                           ),
                                                         ],
                                                       ),
-                                                      ((seatRow / 2).round() -
-                                                                      2) ==
-                                                                  k &&
-                                                              model!
-                                                                      .seatDesignList![
-                                                                          index]
-                                                                      .length !=
-                                                                  seatRow
+                                                      (seatRow==4&&k==1)||(seatRow==3&&k==1&&model!.type=="Bus")
                                                           ? const SizedBox(
-                                                              width: 40,
-                                                            )
+                                                              width: 40//40,
+                                                            ) : (seatRow==2&&k==0) ? const SizedBox(
+                                                        width: 0,
+                                                      )
                                                           : SizedBox(
                                                               width: 5,
                                                             )
@@ -534,9 +546,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                                                               Text("Seat No. - ${model!
                                                                                   .seatDesign![
                                                                               index].passanger!.first.seatNo}"),
-                                                                              Text("OTP - ${model!
+                                                                              /*Text("OTP - ${model!
                                                                                   .seatDesign![
-                                                                              index].passanger!.first.otp}"),
+                                                                              index].passanger!.first.otp}"),*/
                                                                             ],
                                                                           ),
                                                                           const SizedBox(height: 5,),
@@ -631,12 +643,301 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                     ),
                   ],
                 )
-              : Center(
-                  child: Text("No Detail Found"),
-                )
+              : model2!= null ? busViewWidget(): Center(
+          child: Text("No Detail Found"),)
           : Center(
               child: CircularProgressIndicator(),
             ),
     );
   }
+
+  bool _buttonUpper = true;
+  bool _buttonLower = false;
+
+  void _handleButton1Tap() {
+    setState(() {
+      _buttonUpper = true;
+      _buttonLower = false;
+    });
+  }
+
+  void _handleButton2Tap() {
+    setState(() {
+      _buttonUpper = false;
+      _buttonLower = true;
+    });
+  }
+
+  Widget busViewWidget() {
+    return Column(
+      children: [
+        Card(
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Text(
+                  model2?.data?.jsonData ?? "",
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Text(
+                  "Start - ${model2?.data?.startTime}   ->   End - ${model2?.data?.endTime}",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  "Journey Date - ${widget.journeyDate}",
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: Card(
+            child: Container(
+              width: double.infinity,
+              color: Colors.white,
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Select Sleeper (Tap on Sleeper for passenger details)",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  tabBar(),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+
+                      height:350,
+                      color: Colors.grey.withOpacity(0.2),
+
+                      width: MediaQuery.of(context).size.width/2.15,
+                      margin: EdgeInsets.symmetric(horizontal: 20),
+                      padding: EdgeInsets.all(10),
+                      child: _buttonUpper ? ListView.builder(
+
+                        shrinkWrap: true,
+
+                        itemCount: model2?.upperDeck?.length,
+                        itemBuilder: (context, index) {
+                          return deckView(model2?.upperDeck?[index]);
+                        },) : ListView.builder(
+
+                        shrinkWrap: true,
+
+                        itemCount: model2?.lowerDeck?.length,
+                        itemBuilder: (context, index) {
+                          return deckView(model2?.lowerDeck?[index]);
+                        },),),
+                  ),
+
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget tabBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+            height: 40,
+            // width: 40,
+            decoration: BoxDecoration(
+              gradient: _buttonUpper ?  commonGradient() : LinearGradient(colors: [Colors.white, Colors.white]),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child:ElevatedButton(
+                onPressed: _handleButton1Tap,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child:  Text(
+                  'Upper',
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: _buttonUpper ? Colors.white : Colors.black,fontSize: 16),
+                )
+
+            )
+        ),
+        Container(
+            height: 40,
+            //width: 40,
+            decoration: BoxDecoration(
+              gradient: _buttonLower ?  commonGradient() : LinearGradient(colors: [Colors.white, Colors.white]),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child:ElevatedButton(
+                onPressed: _handleButton2Tap,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child:  Text(
+                  'Lower',
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: _buttonLower ? Colors.white : Colors.black,fontSize: 16),
+                )
+
+            )
+        )
+      ],
+    );
+  }
+
+  Widget deckView(List<BusDeck>? deck) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      // mainAxisAlignment: MainAxisAlignment.center,
+      children: List<Widget>.generate(deck?.length ?? 0, (i) {
+        return model2?.data?.busType =="Sleeper" ? InkWell(
+          onTap: (){
+            if(deck?[i].passanger!=null&&deck![i].passanger!.isNotEmpty){
+              showDialog(context: context,
+                  builder: (ctx){
+                    return AlertDialog(
+                      insetPadding: EdgeInsets.symmetric(horizontal: 10),
+                      title: Text("${deck[i].passanger!.first.name}"),
+                      content:  Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Seat No. - ${deck[i].passanger!.first.seatNo}"),
+                              /*Text("OTP - ${model!
+                                  .seatDesignList![index][k].passanger!.first.otp}"),*/
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Gender - ${deck[i].passanger!.first.gender}"),
+                              Text("Age - ${deck[i].passanger!.first.age}"),
+                            ],
+                          ),
+                          const SizedBox(height: 5,),
+                          Text("Pickup Address - ${deck[i].address?.pickupAddress}")
+                          , const SizedBox(height: 5,),
+                          Text("Drop Address - ${deck[i].address?.dropAddress}"),
+
+
+                        ],
+                      ),
+                      actions: [
+                        ElevatedButton(
+                            onPressed: (){
+                              Navigator.pop(context);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              shadowColor: Colors.green,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                            child: Text(
+                              "DONE!!",
+                              style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.white,fontSize: 14),
+                            )
+                        ),
+                      ],
+                    );
+                  });
+            }else{
+              setSnackbar("Seat Not Booked", context);
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 15,),
+            child: Row(
+              children: [
+                Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Container(
+                      height: 60,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        color: deck![i]
+                            .isSelected ??
+                            false? Colors.grey:
+                        deck[i].isChecked ?? false? MyColorName.mainColor:null,
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      padding:const EdgeInsets.all(2.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                            height: 10,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Text(
+                      deck[i].id.toString(),
+                      style: TextStyle(fontSize: 10.0),
+                    ),
+                  ],
+                ),
+                i==0 ? SizedBox(width: 50,): i==1 ? SizedBox(width: 5,): SizedBox()
+              ],
+            ),
+          ),
+        ) : InkWell(
+          onTap: (){
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: Row(
+              children: [
+                deck?[i].isSelected ?? false
+                    ? Image.asset(
+                    'assets/imgs/chair3.png',
+                    height: 30,
+                    width: 30,
+                    scale: 5)
+                    : deck?[i].isChecked ?? false
+                    ? Image.asset(
+                    'assets/imgs/chair2.png',
+                    height: 30,
+                    width: 30,
+                    scale: 5)
+                    : Image.asset(
+                    'assets/imgs/chair1.png',
+                    height: 30,
+                    width: 30,
+                    scale: 5),
+                i==0 ? SizedBox(width: 50,): i==1 ? SizedBox(width: 5): SizedBox()
+              ],
+            ),
+          ),
+        ) ;
+      }),);
+  }
+
+
 }

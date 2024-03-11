@@ -117,8 +117,10 @@ class _AddvehicleDetailsState extends State<AddvehicleDetails> {
       throw Exception("Failed to load suggestions");
     }
   }
+
   ApiBaseHelper apiBaseHelper = ApiBaseHelper();
   LocationsearchModel locationsearchModel=LocationsearchModel();
+
   Future<void> getSuggestions() async {
     isloading=true;
     setState(() {
@@ -160,6 +162,7 @@ class _AddvehicleDetailsState extends State<AddvehicleDetails> {
       throw Exception("Failed to load suggestions");
     }
   }
+
   updatebool(){
     isloading=false;
     setState(() {
@@ -196,18 +199,22 @@ getupadte(){
   setState(() {
 
   });
+  print('${widget.vehicleData?.busType.toString()}____ggg_______');
     seatNoid=widget.vehicleData?.type=="car"?seatBusNo.firstWhere((element) => element.toString()==widget.vehicleData?.noOfSeat):
         seatBusNo.firstWhere((element) => element.toString()==widget.vehicleData?.noOfSeat);
     selectMethod="${widget.vehicleData?.type.toString()[0].toUpperCase()}"+"${widget.vehicleData?.type.toString().substring(1)}";
     price.text=widget.vehicleData?.amount.toString()??"";
     nameCon.text=widget.vehicleData?.name.toString()??"";
     bikeNumberCon.text=widget.vehicleData?.vehicleNo.toString()??"";
- selectMethod=="Auto"?null: selectTypeac=selectType.firstWhere((element) => element==widget.vehicleData?.busType.toString());
+ selectMethod=="Auto"? null: selectMethod=="Car" ? selectTypeac = selectTypecar.firstWhere((element) => element==widget.vehicleData?.busType.toString()) :  selectTypeac = selectType.firstWhere((element) => element==widget.vehicleData?.busType.toString());
+  selectMethod=="Auto" || selectMethod=="Car" ? null : busDeckValue = widget.vehicleData?.busDeck == 'Uper Deck' ? 'Both' : widget.vehicleData?.busDeck;
+  selectMethod=="Auto" || selectMethod=="Car" ||busDeckValue==null  ? null : totalLowerSeat = seatBusNo.firstWhere((element) => element.toString()==widget.vehicleData?.totalSeatLower);
+  selectMethod=="Auto" || selectMethod=="Car" ||widget.vehicleData?.totalSeatUpper==null  ? null : totalUpperSeat = seatBusNo.firstWhere((element) => element.toString()==widget.vehicleData?.totalSeatUpper);
     fromaddid=locationsearchModel.data?.firstWhere((element) => element.id==widget.vehicleData?.address);
   imageurl=widget.vehicleData?.profileImage??"";
     toaddid=locationsearchModel.data?.firstWhere((element) => element.id==widget.vehicleData?.toAddress);
-  selectMethod=="Auto"?null:  startTime.text=widget.vehicleData?.startTime.toString()??"";
-  selectMethod=="Auto"?null: endTime.text=widget.vehicleData?.endTime.toString()??"";
+  /*selectMethod=="Auto"? null :*/  startTime.text = widget.vehicleData?.startTime.toString()??"";
+  /*selectMethod=="Auto"?null :*/ endTime.text=widget.vehicleData?.endTime.toString()??"";
 
      startdate.text=widget.vehicleData?.date.toString()??"";
   stopage.clear();
@@ -1132,6 +1139,7 @@ getupadte(){
                                     pickedTime.format(context).toString());
                                 print(
                                     parsedTime); // Output: 1970-01-01 22:53:00.000
+
                                 String formattedTime =
                                     DateFormat('HH:mm').format(parsedTime);
                                 print(formattedTime); // Output: 14:59:00
@@ -1779,7 +1787,7 @@ getupadte(){
     "end_time":endTime.text,
     "vehicle_no":bikeNumberCon.text,
     "amount":price.text,
-          "bus_deck":busDeckValue ?? '',
+          "bus_deck":busDeckValue == 'Both' ? "Uper Deck" : busDeckValue ?? '',
           "total_upper_seat": totalUpperSeat ?? '',
           "total_lower_seat":totalLowerSeat ?? '',
 

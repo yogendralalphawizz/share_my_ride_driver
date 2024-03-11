@@ -42,6 +42,9 @@ class VehicleData {
   String? startTime;
   String? endTime;
   String? date;
+  String? busDeck;
+  String? totalSeatLower;
+  String? totalSeatUpper;
 
   String? vehicleNo;
   dynamic? jsonData;
@@ -55,6 +58,9 @@ class VehicleData {
   VehicleData(
       {this.id,
         this.name,
+        this.totalSeatLower,
+        this.totalSeatUpper,
+        this.busDeck,
         this.busType,
         this.seatType,
         this.type,
@@ -78,6 +84,9 @@ class VehicleData {
 
   VehicleData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    totalSeatLower = json['leftseat'];
+    totalSeatUpper = json['uper_left'];
+    busDeck = json['bus_deck'];
     name = json['name'];
     busType = json['bus_type'];
     seatType = json['seat_type'];

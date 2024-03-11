@@ -19,10 +19,12 @@ class BookingModel {
   String? driverId;
   String? bookingDate;
   String? availableSeats;
+  String? mobile;
 
   BookingModel(
       {this.id,
         this.name,
+        this.mobile,
         this.busType,
         this.seatType,
         this.type,
@@ -44,6 +46,7 @@ class BookingModel {
 
   BookingModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    mobile = json['mobile'];
     name = json['name'];
     busType = json['bus_type'];
     seatType = json['seat_type'];

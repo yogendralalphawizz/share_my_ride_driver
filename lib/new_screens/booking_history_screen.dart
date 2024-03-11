@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:smr_driver/Model/booking_model.dart';
@@ -42,10 +44,13 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       'driver_id': curUserId,
     };
     Map response = await apiBaseHelper.postAPICall(Uri.parse("${baseUrl}bus_history_driver_all"), param);
+
+
     setState(() {
       loading = false;
       bookingList.clear();
     });
+    log('${response}');
     if(response['status']){
       for(var v in response['data']){
         bookingList.add(BookingModel.fromJson(v));
@@ -146,7 +151,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
                             fontSize: 10.0,
 
                             loading: false,
-                            title: "Type - ${model.busType}",
+                            title: model.busType == 'null' ? 'Type -'  : "Type - ${model.busType ?? ''}",
                             context: context,
                           ),
                           const SizedBox(width: 6,),

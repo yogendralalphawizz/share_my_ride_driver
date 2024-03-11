@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _VehicleListState extends State<VehicleList> {
     print('${request.fields}________');
     if (response.statusCode == 200) {
       var result = await response.stream.bytesToString();
-      print('${result}________');
+      log('${result}________');
       vehicleListModel = VehicleListModel.fromJson(jsonDecode(result));
       isStatus="${vehicleListModel.data?.first.status}";
       print(vehicleListModel.data?.first.status);
