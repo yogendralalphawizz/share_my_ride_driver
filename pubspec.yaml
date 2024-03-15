@@ -61,6 +61,8 @@ dependencies:
 #  wakelock: ^0.6.2
   animated_text_kit: ^4.2.2
   file: ^6.1.4
+  pinput: ^3.0.1
+  email_validator: ^2.1.17
   geolocator: ^9.0.2
   curved_labeled_navigation_bar: ^2.0.2
   intl:

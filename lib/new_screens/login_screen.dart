@@ -225,7 +225,6 @@
 //   }
 // }
 
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -235,11 +234,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 import 'package:http/http.dart' as http;
 import 'package:smr_driver/Auth/Registration/UI/registration_page.dart';
+import 'package:smr_driver/new_screens/VerifyOtp.dart';
 import 'package:smr_driver/new_screens/home_screen.dart';
 import 'package:smr_driver/new_screens/register_screen.dart';
+import 'package:smr_driver/new_screens/send_Otp.dart';
+import 'package:smr_driver/utils/PushNotificationService.dart';
 
 import '../Auth/ForgotPassword/UI/forgot_page.dart';
 import '../Auth/ForgotPassword/UI/forgot_password_page.dart';
@@ -253,23 +254,20 @@ import 'bottom_navigation.dart';
 import 'my_profile.dart';
 
 class LoginScreen extends StatefulWidget {
-
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   bool isLoading = false;
   bool isloader = false;
-  bool isMobile = false;
 
   TextEditingController mobileCtr = TextEditingController();
-  TextEditingController passCtr = TextEditingController();
-  List<String> method = ["Email","Mobile No."];
-  String selectMethod  = "Email";
+  List<String> method = ["Email", "Mobile No."];
+  String selectMethod = "Email";
   bool obscure = true;
-  void registerApi() async {
+
+  void loginApi() async {
     //await App.init();
 
     ///MultiPart request
@@ -277,11 +275,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (isNetwork) {
       try {
         Map<String, String> param = {
-
           "email": emailCon.text,
           "password": passCon.text,
-          "fcm_id":"${fcmToken}"
-
+          "fcm_id": "${fcmToken}"
         };
         var request = http.MultipartRequest(
           'POST',
@@ -292,7 +288,7 @@ class _LoginScreenState extends State<LoginScreen> {
           "Content-type": "multipart/form-data"
         };
 
-       print("kkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+        print("kkkkkkkkkkkkkkkkkkkkkkkkkkkk");
         request.headers.addAll(headers);
         request.fields.addAll(param);
         print(request.fields.toString());
@@ -311,11 +307,11 @@ class _LoginScreenState extends State<LoginScreen> {
             Map info = data['data'];
             setSnackbar(data['message'].toString(), context);
 
-           await App.localStorage.setString("userId","${info["id"]}").toString();
-           curUserId="${info["id"]}";
-            navigateBackScreen(
-                context, BottomBar());
-
+             App.localStorage
+                .setString("userId", "${info["id"]}")
+                .toString();
+            curUserId = "${info["id"]}";
+            navigateBackScreen(context, BottomBar());
           } else {
             setSnackbar(data['message'].toString(), context);
           }
@@ -333,6 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
+
   // getLoginApi() async {
   //   setState(() {
   //     isLoading = true;
@@ -464,7 +461,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => OfflinePage("")),
-              (route) => false);
+          (route) => false);
       return;
     }
     if (App.localStorage.getString("userProfileId") != null) {
@@ -478,34 +475,40 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => ProfileScreen()),
-              (route) => false);
+          (route) => false);
       return;
     }
   }
+
   final _formKey = GlobalKey<FormState>();
   TextEditingController emailCon = TextEditingController();
   TextEditingController passCon = TextEditingController();
-  bool isPasswordVisible = true ;
+  bool isPasswordVisible = true;
+
+  bool isMobile = false;
+  int _value = 2;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-  //  checkLogin();
-
+    //  checkLogin();
   }
+
   bool loading = false;
   String? id;
-  void checkLogin()async{
+
+  void checkLogin() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     id = pref.getString('userId');
 
-    if(App.localStorage.getString("userId") == null){
+    if (App.localStorage.getString("userId") == null) {
       print("this is is user is ${id} from null");
-       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
-    }
-    else{
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BottomBar()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    } else {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => BottomBar()));
     }
   }
 
@@ -516,186 +519,327 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = MediaQuery.of(context).size;
     return SafeArea(
         child: Scaffold(
-          // backgroundColor: Color(0xffEBECF0),
-          body: Column(
+      // backgroundColor: Color(0xffEBECF0),
+      body: Column(
+        children: [
+          Container(
+            width: getWidth(
+              context,
+              100,
+            ),
+            //  height: getHeight(context,35, ),
+            decoration: BoxDecoration(
+                gradient: commonGradient(),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(52),
+                  bottomRight: Radius.circular(52),
+                )),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                boxHeight(
+                  context,
+                  2,
+                ),
+                Text(
+                  "LOGIN ",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium!
+                      .copyWith(color: Colors.white),
+                ),
+                boxHeight(
+                  context,
+                  2,
+                ),
+              ],
+            ),
+          ),
+          boxHeight(
+            context,
+            3,
+          ),
+
+          // SizedBox(height: 45,),
+          boxHeight(
+            context,
+            2,
+          ),
+          Spacer(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: getWidth(context,100, ),
-                //  height: getHeight(context,35, ),
-                decoration: BoxDecoration(
-                    gradient: commonGradient(),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(52),
-                      bottomRight: Radius.circular(52),
-                    )),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    boxHeight(context,2, ),
-                    Text(
-                      "LOGIN ",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium!
-                          .copyWith(color: Colors.white),
-                    ),
-                    boxHeight(context,2, ),
-                  ],
-                ),
-              ),
-              boxHeight(context,3, ),
-
-              // SizedBox(height: 45,),
-              boxHeight(context,2,),
-Spacer(),
-              Padding(
-                padding:
-                EdgeInsets.symmetric(horizontal: getWidth(context,8,)),
-                child: TextFormField(
-                  controller: emailCon,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    fillColor: MyColorName.colorBg2,
-                    filled: true,
-                    labelText: "Email Address/Mobile Number",
-                    counterText: '',
-                    labelStyle: TextStyle(color: Colors.black87),
-                    prefixIcon: IconButton(
-                      onPressed: null,
-                      icon: Icon(
-                        Icons.mail,
-                        color: MyColorName.primaryDark,
-                      ),
-                    ),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: MyColorName.colorBg2,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: MyColorName.colorBg2,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
-              boxHeight(context,2,),
-              Padding(
-                padding:
-                EdgeInsets.symmetric(horizontal: getWidth(context,8, )),
-                child: TextFormField(
-                  controller: passCon,
-                  obscureText: obscure,
-                  decoration: InputDecoration(
-                    fillColor: MyColorName.colorBg2,
-                    filled: true,
-                    labelText: "Password",
-                    counterText: '',
-                    labelStyle: TextStyle(color: Colors.black87),
-                    prefixIcon: IconButton(
-                      onPressed: null,
-                      icon: Icon(
-                        Icons.lock,
-                        color: MyColorName.primaryDark,
-                      ),
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          obscure = !obscure;
-                        });
-                      },
-                      icon: Icon(
-                        obscure ? Icons.visibility_off : Icons.visibility,
-                        color: MyColorName.primaryDark,
-                      ),
-                    ),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: MyColorName.colorBg2,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: MyColorName.colorBg2,
-                      ),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
-
-
-              SizedBox(height: 35),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40,vertical: 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    InkWell(
-                      onTap:(){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPage()));
-
-
-                      },
-                        child: Text("Forgot Password",style: TextStyle(color: Color(0xffd22027),fontSize: 17,fontWeight: FontWeight.bold),))
-                  ],
-                ),
-              ),
-              SizedBox(height: 35),
-              commonButton(
-                width: 70,
-                onPressed: () {
-
-                  if (emailCon.text == ""
-
-                  ) {
-                    setSnackbar("Enter Valid Email or Mobile", context);
-                    return;
-                  }
-                  if (passCon.text == ""
-
-                  ) {
-                    setSnackbar("Enter Password", context);
-                    return;
-                  }
-
-
-
-
+              Radio(
+                value: 2,
+                fillColor: MaterialStateColor.resolveWith(
+                    (states) => MyColorName.mainColor),
+                activeColor: Colors.white,
+                groupValue: _value,
+                onChanged: (int? value) {
                   setState(() {
-                    loading = true;
+                    _value = value!;
+                    isMobile = false;
                   });
-                  registerApi();
                 },
-                loading: loading,
-                title: "LOGIN",
-                context: context,
               ),
-              SizedBox(height: 23,),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Don't Have an Account?",style: TextStyle(fontSize: 15),),
-                  SizedBox(width: 5,),
-                  GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
-
-                        // Navigator.push(context, MaterialPageRoute(builder: ))
-                        // widget.loginInteractor.signUp();
-                      },
-                      child: Text("Register ",style: TextStyle(color: Color(0xffd22027),fontSize: 17,fontWeight: FontWeight.bold),))
-                ],),
-
-              Spacer()
+              const Text(
+                "Email",
+                style: TextStyle(color: Colors.black87, fontSize: 16),
+              ),
+              Radio(
+                  value: 1,
+                  fillColor: MaterialStateColor.resolveWith(
+                      (states) => MyColorName.mainColor),
+                  groupValue: _value,
+                  onChanged: (int? value) {
+                    setState(() {
+                      _value = value!;
+                      isMobile = true;
+                    });
+                  }),
+              // SizedBox(width: 10.0,),
+              const Text(
+                "Mobile No.",
+                style: TextStyle(color: Colors.black87, fontSize: 16),
+              ),
             ],
           ),
-        ));
+          !isMobile
+              ? Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: getWidth(
+                        context,
+                        8,
+                      )),
+                      child: TextFormField(
+                        controller: emailCon,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          fillColor: MyColorName.colorBg2,
+                          filled: true,
+                          labelText: "Email Address/Mobile Number",
+                          counterText: '',
+                          labelStyle: TextStyle(color: Colors.black87),
+                          prefixIcon: IconButton(
+                            onPressed: null,
+                            icon: Icon(
+                              Icons.mail,
+                              color: MyColorName.primaryDark,
+                            ),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyColorName.colorBg2,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyColorName.colorBg2,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    boxHeight(
+                      context,
+                      2,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: getWidth(
+                        context,
+                        8,
+                      )),
+                      child: TextFormField(
+                        controller: passCon,
+                        obscureText: obscure,
+                        decoration: InputDecoration(
+                          fillColor: MyColorName.colorBg2,
+                          filled: true,
+                          labelText: "Password",
+                          counterText: '',
+                          labelStyle: TextStyle(color: Colors.black87),
+                          prefixIcon: IconButton(
+                            onPressed: null,
+                            icon: Icon(
+                              Icons.lock,
+                              color: MyColorName.primaryDark,
+                            ),
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                obscure = !obscure;
+                              });
+                            },
+                            icon: Icon(
+                              obscure ? Icons.visibility_off : Icons.visibility,
+                              color: MyColorName.primaryDark,
+                            ),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyColorName.colorBg2,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: MyColorName.colorBg2,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 35),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ForgotPage()));
+                              },
+                              child: Text(
+                                "Forgot Password",
+                                style: TextStyle(
+                                    color: Color(0xffd22027),
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold),
+                              ))
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              : SizedBox.shrink(),
+          isMobile
+              ? Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: getWidth(
+                    context,
+                    8,
+                  )),
+                  child: TextFormField(
+                    controller: mobileCtr,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
+                    decoration: InputDecoration(
+                      fillColor: MyColorName.colorBg2,
+                      filled: true,
+                      labelText: "Mobile Number",
+                      counterText: '',
+                      labelStyle: TextStyle(color: Colors.black87),
+                      prefixIcon: IconButton(
+                        onPressed: null,
+                        icon: Icon(
+                          Icons.phone,
+                          color: MyColorName.primaryDark,
+                        ),
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: MyColorName.colorBg2,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: MyColorName.colorBg2,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                )
+              : SizedBox.shrink(),
+          SizedBox(height: 35),
+          commonButton(
+            width: 70,
+            onPressed: () {
+              if (isMobile) {
+                if (mobileCtr.text == "") {
+                  setSnackbar("Enter Valid Mobile Number", context);
+                  return;
+                }
+                /*Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          VerifyOtp(mobile: mobileCtr.text, title: 'login'),
+                    ));*/
+                setState(() {
+                  loading = true;
+                });
+                sendLoginOtpApi();
+              } else {
+                if (emailCon.text == "") {
+                  setSnackbar("Enter Valid Email or Mobile", context);
+                  return;
+                }
+                if (passCon.text == "") {
+                  setSnackbar("Enter Password", context);
+                  return;
+                }
+
+                setState(() {
+                  loading = true;
+                });
+                loginApi();
+              }
+            },
+            loading: loading,
+            title: "LOGIN",
+            context: context,
+          ),
+          SizedBox(
+            height: 23,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Don't Have an Account?",
+                style: TextStyle(fontSize: 15),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SendOTPScreen()));
+
+                    // Navigator.push(context, MaterialPageRoute(builder: ))
+                    // widget.loginInteractor.signUp();
+                  },
+                  child: Text(
+                    "Register ",
+                    style: TextStyle(
+                        color: Color(0xffd22027),
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold),
+                  ))
+            ],
+          ),
+
+          Spacer()
+        ],
+      ),
+    ));
     // return Scaffold(
     //   body: Container(
     //     width: MediaQuery.of(context).size.width,
@@ -1162,6 +1306,40 @@ Spacer(),
     //
     //
     // );
-
   }
+
+  void sendLoginOtpApi() async {
+    try {
+      await App.init();
+      Map param = {
+        "mobile":mobileCtr.text,
+      };
+
+      var response =
+      await apiBaseHelper.postAPICall(Uri.parse("${baseUrl}send_otp"), param);
+      setState(() {
+        loading = false;
+      });
+      if (!response['error']) {
+
+        Fluttertoast.showToast(msg: response['message']);
+
+        if(response['otp']!=null){
+          Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => VerifyOtp(otp:response['otp'].toString(),mobile: mobileCtr.text,title: 'login'),));
+        }
+      } else {
+        setSnackbar(response['message'], context);
+      }
+    } catch (e) {
+      setState(() {
+        loading = false;
+      });
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+
 }

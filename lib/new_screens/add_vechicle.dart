@@ -210,7 +210,7 @@ getupadte(){
   selectMethod=="Auto" || selectMethod=="Car" ? null : busDeckValue = widget.vehicleData?.busDeck == 'Uper Deck' ? 'Both' : widget.vehicleData?.busDeck;
   selectMethod=="Auto" || selectMethod=="Car" ||busDeckValue==null  ? null : totalLowerSeat = seatBusNo.firstWhere((element) => element.toString()==widget.vehicleData?.totalSeatLower);
   selectMethod=="Auto" || selectMethod=="Car" ||widget.vehicleData?.totalSeatUpper==null  ? null : totalUpperSeat = seatBusNo.firstWhere((element) => element.toString()==widget.vehicleData?.totalSeatUpper);
-    fromaddid=locationsearchModel.data?.firstWhere((element) => element.id==widget.vehicleData?.address);
+    fromaddid= locationsearchModel.data?.firstWhere((element) => element.id==widget.vehicleData?.address);
   imageurl=widget.vehicleData?.profileImage??"";
     toaddid=locationsearchModel.data?.firstWhere((element) => element.id==widget.vehicleData?.toAddress);
   /*selectMethod=="Auto"? null :*/  startTime.text = widget.vehicleData?.startTime.toString()??"";
