@@ -7,6 +7,7 @@ import 'package:pinput/pinput.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smr_driver/Assets/assets.dart';
+import 'package:smr_driver/Auth/Login/UI/login_page.dart';
 import 'package:smr_driver/new_screens/register_screen.dart';
 import 'package:smr_driver/new_screens/resetPassword_ui.dart';
 import 'package:smr_driver/utils/ApiBaseHelper.dart';
@@ -19,6 +20,7 @@ import '../../../Theme/colors.dart';
 import 'package:http/http.dart'as http;
 
 import 'bottom_navigation.dart';
+import 'my_profile.dart';
 
 
 class VerifyOtp extends StatefulWidget {
@@ -169,7 +171,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
             ),),
             InkWell(
               onTap: (){
-                if(widget.title=='senOtp'){
+                if(widget.title=='sendOtp'){
                   registerResendOtpApi();
                 }else if(widget.title=='forgot') {
                   reSendOtp();
@@ -263,6 +265,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
 
     }
   }
+
   verifyOtp() async {
     var headers = {
       'Cookie': 'ci_session=1fae43cb24be06ee09e394b6be82b42f6d887269'
@@ -282,15 +285,70 @@ class _VerifyOtpState extends State<VerifyOtp> {
       var finalresponse = await response.stream.bytesToString();
       final jsonresponse = json.decode(finalresponse);
       if (jsonresponse['error'] == false){
-        // int? otp = jsonresponse["otp"];
-        Map info = jsonresponse['data'];
+
+        if (jsonresponse['data']['is_verified'].toString() == "1" &&
+            jsonresponse['data']['reject'].toString() == "1") {
+          App.localStorage
+              .setString("userProfileId", jsonresponse['data']['id'].toString());
+          curUserId = jsonresponse['data']['id'].toString();
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  (route) => false);
+        } else if (jsonresponse['data']['is_verified'].toString() == "0") {
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Alert"),
+                  content: Text("Wait For Admin Approval"),
+                  actions: <Widget>[
+                    ElevatedButton(
+                        child: Text('OK'),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                              MyColorName.primaryLite),
+                        ),
+                        /* shape: RoundedRectangleBorder(
+                                    side: BorderSide(color: Colors.transparent)),
+                                textColor: Theme.of(context).colorScheme.primary,*/
+                        onPressed: () async {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginPage()),
+                                  (route) => false);
+                        }),
+                  ],
+                );
+              });
+        }
+        // else if(response['data']['is_active'].toString() == "1" && response['data']['reject'].toString() == "1"){
+        //   Navigator.pushAndRemoveUntil(
+        //       context,
+        //       MaterialPageRoute(builder: (context) => MyProfilePage(
+        //         isActive: response['data']['is_active'].toString(),
+        //       )),
+        //           (route) => false);
+        // }
+        else {
+          App.localStorage
+              .setString("userId", jsonresponse['data']['id'].toString());
+          curUserId = jsonresponse['data']['id'].toString();
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => BottomBar()),
+                  (route) => false);
+        }
+        /*Map info = jsonresponse['data'];
         setSnackbar(jsonresponse['message'].toString(), context);
 
         App.localStorage
             .setString("userId", "${info["id"]}")
             .toString();
         curUserId = "${info["id"]}";
-        navigateBackScreen(context, BottomBar());
+        navigateBackScreen(context, BottomBar());*/
       }
       else{
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("${jsonresponse['message']}")));

@@ -34,6 +34,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
   List<StationModel> pickList = [];
   List<StationModel> dropList = [];
   double totalAmount = 0;
+
+  int totalSeat = 0;
   @override
   void initState() {
     // TODO: implement initState
@@ -58,6 +60,12 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     if (response['status']) {
       if(response['data']['type']=='auto' || response['data']['type']=='car' || response['data']['bus_type']!='Sleeper') {
         model = BusDetailModel.fromJson(response['data']);
+        model?.seatDesignList?.forEach((element) {
+          element.forEach((element) {
+            totalSeat++;
+          });
+
+        });
       }else {
         model2 = BusDesignDataResponse.fromJson(response);
       }
@@ -491,11 +499,27 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                                           ),
                                                         ],
                                                       ),
-                                                      (seatRow==4&&k==1)||(seatRow==3&&k==1&&model!.type=="Bus")
+                                                      ((seatRow == 4) && (index == model!.seatDesignList!.length- 1)) && (model!.type == "bus") && (totalSeat == 20 || totalSeat == 14 || totalSeat == 17)
+                                                          ?   SizedBox()
+                                                          : (seatRow == 4 && k == 1) || (seatRow == 3 && k == 1 && model!.type == "Bus")
+                                                          ? (index == model!.seatDesignList!.length- 1 && model!.type == "bus" && totalSeat%2 !=0 ) ? SizedBox()
+                                                          :(totalSeat == 20 || totalSeat == 14 || totalSeat == 17 )&& index == model!.seatDesignList!.length- 1&&  model!.type == "bus" ? SizedBox(width: 40,): const SizedBox(
+                                                        width: 40,
+                                                      )
+                                                          : (seatRow == 3 &&
+                                                          k == 0 &&
+                                                          model!.type ==
+                                                              "bus")
+                                                          ? SizedBox(
+                                                        width: 20,
+                                                      )
+                                                          : (seatRow ==
+                                                          2 &&
+                                                          k ==
+                                                              0)
                                                           ? const SizedBox(
-                                                              width: 40//40,
-                                                            ) : (seatRow==2&&k==0) ? const SizedBox(
-                                                        width: 0,
+                                                        width:
+                                                        0,
                                                       )
                                                           : SizedBox(
                                                               width: 5,

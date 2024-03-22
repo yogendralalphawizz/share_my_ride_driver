@@ -11,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smr_driver/Auth/Login/UI/login_page.dart';
 
 import 'package:smr_driver/new_screens/verification_screen.dart';
 
@@ -1014,8 +1015,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
             if (!data['error']) {
               Map info = data['data'];
               setSnackbar(data['message'].toString(), context);
-              navigateScreen(
-                  context, VerificationScreen(info['mobile'], info['otp'].toString()));
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => LoginPage()),
+                      (route) => false);
+             /* navigateScreen(
+                  context, VerificationScreen(info['mobile'], info['otp'].toString()));*/
 
             } else {
               setSnackbar(data['message'].toString(), context);
